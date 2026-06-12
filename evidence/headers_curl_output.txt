@@ -1,1 +1,47 @@
+# HTTP Response Headers — curl -I Output
+# Target  : https://demo.owasp-juice.shop
+# Tool    : curl 8.x
+# Date    : June 2026
+# Tester  : Angel Proshia F
+# Scope   : Read-only header inspection
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMAND RUN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  curl -I https://demo.owasp-juice.shop/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESPONSE HEADERS OBSERVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HTTP/2 200
+  content-type: text/html; charset=utf-8
+  x-powered-by: Express                      ← DISCLOSES FRAMEWORK
+  cache-control: no-cache
+  accept-ranges: bytes
+  date: [date of scan]
+  vary: Accept-Encoding
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECURITY HEADER ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Header                        Present?   Risk if Missing
+  ──────────────────────────────────────────────────────────
+  Content-Security-Policy       MISSING    XSS & injection attacks
+  X-Frame-Options               MISSING    Clickjacking via iframe
+  X-Content-Type-Options        MISSING    MIME-sniffing attacks
+  Strict-Transport-Security     MISSING    SSL stripping (MITM)
+  Referrer-Policy               MISSING    URL leakage to 3rd parties
+  Permissions-Policy            MISSING    Feature abuse
+  X-Powered-By: Express         PRESENT    Discloses framework — remove
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RELATED FINDINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  VULN-04 — Missing HTTP Security Headers
+  VULN-07 — Verbose Server Banner / Technology Disclosure
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOTE: Evidence captured via passive read-only header inspection.
+      No modifications made to the application or its data.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
