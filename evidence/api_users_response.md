@@ -70,5 +70,5 @@ This information significantly reduces the reconnaissance effort needed by an at
 
 ---
 
-> ⚠️ No data was downloaded, stored, or used beyond this observation note.  
+> No data was downloaded, stored, or used beyond this observation note.  
 > Assessment conducted in passive, read-only mode only.
