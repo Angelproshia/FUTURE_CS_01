@@ -12,8 +12,8 @@
 | Setting | Value |
 |---------|-------|
 | Spider Depth | 3 |
-| Passive Scan | ✅ Enabled |
-| Active Scan | ❌ DISABLED — out of scope |
+| Passive Scan | Enabled |
+| Active Scan | DISABLED — out of scope |
 | Authentication | Unauthenticated (public pages only) |
 | URLs Crawled | ~47 |
 
@@ -62,5 +62,5 @@
 
 ---
 
-> ⚠️ All testing conducted in **passive/read-only mode only**.  
+> All testing conducted in **passive/read-only mode only**.  
 > No exploitation was performed. No application data was modified.
