@@ -1,47 +1,55 @@
-# HTTP Response Headers — curl -I Output
+# HTTP Response Headers — Real Live Capture
+# Command : curl -k -I https://demo.owasp-juice.shop/
 # Target  : https://demo.owasp-juice.shop
-# Tool    : curl 8.x
-# Date    : June 2026
+# Date    : Fri, 12 Jun 2026 13:28:42 GMT
 # Tester  : Angel Proshia F
-# Scope   : Read-only header inspection
+# Scope   : Read-only passive header inspection
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-COMMAND RUN
+EXACT CURL OUTPUT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  curl -I https://demo.owasp-juice.shop/
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RESPONSE HEADERS OBSERVED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  HTTP/2 200
-  content-type: text/html; charset=utf-8
-  x-powered-by: Express                      ← DISCLOSES FRAMEWORK
-  cache-control: no-cache
-  accept-ranges: bytes
-  date: [date of scan]
-  vary: Accept-Encoding
+  HTTP/1.1 200 OK
+  Date                   : Fri, 12 Jun 2026 13:28:42 GMT
+  Server                 : Heroku
+  Accept-Ranges          : bytes
+  Access-Control-Allow-Origin : *
+  Cache-Control          : public, max-age=0
+  Content-Length         : 9903
+  Content-Type           : text/html; charset=UTF-8
+  Etag                   : W/"26af-19ebb95535a"
+  Feature-Policy         : payment 'self'
+  Last-Modified          : Fri, 12 Jun 2026 11:26:26 GMT
+  Nel                    : {"report_to":"heroku-nel","max_age":3600,...}
+  Report-To              : {"group":"heroku-nel","endpoints":[...],"max_age":3600}
+  Reporting-Endpoints    : heroku-nel="https://nel.heroku.com/reports?..."
+  Vary                   : Accept-Encoding
+  Via                    : 1.1 heroku-router
+  X-Content-Type-Options : nosniff
+  X-Frame-Options        : SAMEORIGIN
+  X-Recruiting           : /#/jobs
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SECURITY HEADER ANALYSIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Header                        Present?   Risk if Missing
-  ──────────────────────────────────────────────────────────
-  Content-Security-Policy       MISSING    XSS & injection attacks
-  X-Frame-Options               MISSING    Clickjacking via iframe
-  X-Content-Type-Options        MISSING    MIME-sniffing attacks
-  Strict-Transport-Security     MISSING    SSL stripping (MITM)
-  Referrer-Policy               MISSING    URL leakage to 3rd parties
-  Permissions-Policy            MISSING    Feature abuse
-  X-Powered-By: Express         PRESENT    Discloses framework — remove
+  Header                         Status        Severity   Finding
+  ──────────────────────────────────────────────────────────────────
+  Content-Security-Policy        ❌ MISSING     HIGH       VULN-04
+  Strict-Transport-Security      ❌ MISSING     HIGH       VULN-04
+  Referrer-Policy                ❌ MISSING     MEDIUM     VULN-04
+  Permissions-Policy             ❌ MISSING     MEDIUM     VULN-04
+  Access-Control-Allow-Origin: * ⚠️ WILDCARD    MEDIUM     VULN-04
+  Feature-Policy: payment 'self' ⚠️ INCOMPLETE  MEDIUM     VULN-04
+  Server: Heroku                 ⚠️ DISCLOSES   LOW        VULN-07
+  X-Recruiting: /#/jobs          ⚠️ UNNECESSARY LOW        VULN-07
+  X-Frame-Options: SAMEORIGIN    ✅ PRESENT     SAFE         —
+  X-Content-Type-Options: nosniff✅ PRESENT     SAFE         —
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RELATED FINDINGS
+NOTES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  VULN-04 — Missing HTTP Security Headers
-  VULN-07 — Verbose Server Banner / Technology Disclosure
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-NOTE: Evidence captured via passive read-only header inspection.
-      No modifications made to the application or its data.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  - No X-Powered-By header present (suppressed at Heroku level)
+  - X-Frame-Options and X-Content-Type-Options correctly configured
+  - CSP and HSTS are the two most critical missing headers
+  - Wildcard CORS (*) allows any external domain to read responses
